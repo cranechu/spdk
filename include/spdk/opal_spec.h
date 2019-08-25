@@ -104,6 +104,10 @@ enum spdk_lv0_discovery_feature_code {
 	FEATURECODE_OPALV200	= 0x0203,
 	FEATURECODE_GEOMETRY	= 0x0003,
 
+	// pynvme: support pyrite
+	FEATURECODE_PYRITE100	= 0x0302,
+	FEATURECODE_PYRITE200	= 0x0303,
+
 	/*
 	 * TCG Storage Opal Feature Set Single User Mode v1.00 r2.00
 	 * 4.2.1 Single User Mode Feature Descriptor

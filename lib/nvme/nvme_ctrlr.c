@@ -567,7 +567,10 @@ nvme_ctrlr_set_supported_log_pages(struct spdk_nvme_ctrlr *ctrlr)
 	if (ctrlr->cdata.lpa.celp) {
 		ctrlr->log_page_supported[SPDK_NVME_LOG_COMMAND_EFFECTS_LOG] = true;
 	}
-	if (ctrlr->cdata.vid == SPDK_PCI_VID_INTEL && !(ctrlr->quirks & NVME_INTEL_QUIRK_NO_LOG_PAGES)) {
+
+	// pynvme: ignore intel log pages
+	if (false && ctrlr->cdata.vid == SPDK_PCI_VID_INTEL &&
+	    !(ctrlr->quirks & NVME_INTEL_QUIRK_NO_LOG_PAGES)) {
 		rc = nvme_ctrlr_set_intel_support_log_pages(ctrlr);
 	}
 
@@ -2092,7 +2095,8 @@ nvme_ctrlr_free_processes(struct spdk_nvme_ctrlr *ctrlr)
 	TAILQ_FOREACH_SAFE(active_proc, &ctrlr->active_procs, tailq, tmp) {
 		TAILQ_REMOVE(&ctrlr->active_procs, active_proc, tailq);
 
-		assert(STAILQ_EMPTY(&active_proc->active_reqs));
+		// pynvme: dirty shutdown
+		//assert(STAILQ_EMPTY(&active_proc->active_reqs));
 
 		spdk_free(active_proc);
 	}
@@ -2252,18 +2256,19 @@ nvme_ctrlr_process_init(struct spdk_nvme_ctrlr *ctrlr)
 	switch (ctrlr->state) {
 	case NVME_CTRLR_STATE_INIT_DELAY:
 		nvme_ctrlr_set_state(ctrlr, NVME_CTRLR_STATE_INIT, ready_timeout_in_ms);
-		if (ctrlr->quirks & NVME_QUIRK_DELAY_BEFORE_INIT) {
-			/*
-			 * Controller may need some delay before it's enabled.
-			 *
-			 * This is a workaround for an issue where the PCIe-attached NVMe controller
-			 * is not ready after VFIO reset. We delay the initialization rather than the
-			 * enabling itself, because this is required only for the very first enabling
-			 * - directly after a VFIO reset.
-			 */
-			SPDK_DEBUGLOG(SPDK_LOG_NVME, "Adding 2 second delay before initializing the controller\n");
-			ctrlr->sleep_timeout_tsc = spdk_get_ticks() + (2000 * spdk_get_ticks_hz() / 1000);
-		}
+		/*
+		 * Controller may need some delay before it's enabled.
+		 *
+		 * This is a workaround for an issue where the PCIe-attached NVMe controller
+		 * is not ready after VFIO reset. We delay the initialization rather than the
+		 * enabling itself, because this is required only for the very first enabling
+		 * - directly after a VFIO reset.
+		 *
+		 * TODO: Figure out what is actually going wrong.
+		 */
+
+		// pynvme: removes the delay to catch the potential device issues
+		ctrlr->sleep_timeout_tsc = spdk_get_ticks(); // + (2 * spdk_get_ticks_hz() / 1000);
 		break;
 
 	case NVME_CTRLR_STATE_INIT:
@@ -2347,6 +2352,7 @@ nvme_ctrlr_process_init(struct spdk_nvme_ctrlr *ctrlr)
 	case NVME_CTRLR_STATE_ENABLE_WAIT_FOR_READY_1:
 		if (csts.bits.rdy == 1) {
 			SPDK_DEBUGLOG(SPDK_LOG_NVME, "CC.EN = 1 && CSTS.RDY = 1 - controller is ready\n");
+
 			/*
 			 * The controller has been enabled.
 			 *  Perform the rest of initialization serially.
@@ -3157,4 +3163,17 @@ const struct spdk_nvme_transport_id *
 spdk_nvme_ctrlr_get_transport_id(struct spdk_nvme_ctrlr *ctrlr)
 {
 	return &ctrlr->trid;
+}
+
+uint32_t
+spdk_nvme_io_qpair_count(struct spdk_nvme_ctrlr *ctrlr)
+{
+	uint32_t count = 0;
+	struct spdk_nvme_qpair	*qpair;
+
+	TAILQ_FOREACH(qpair, &ctrlr->active_io_qpairs, tailq) {
+		count ++;
+	}
+
+	return count;
 }
