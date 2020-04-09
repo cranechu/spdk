@@ -105,7 +105,7 @@ struct nvme_pcie_ctrlr {
 	/* Flag to indicate the MMIO register has been remapped */
 	bool is_remapped;
 
-  // backup bar for dirty power cycle
+	// backup bar for dirty power cycle
 	volatile struct spdk_nvme_registers *regs_bak;
 };
 
@@ -2220,35 +2220,32 @@ uint32_t nvme_pcie_qpair_outstanding_count(struct spdk_nvme_qpair *qpair)
 	return count;
 }
 
-void nvme_pcie_bar_remap_recover(struct spdk_nvme_ctrlr* ctrlr)
+void nvme_pcie_bar_remap_recover(struct spdk_nvme_ctrlr *ctrlr)
 {
 	struct nvme_pcie_ctrlr *pctrlr = nvme_pcie_ctrlr(ctrlr);
-  
-  pctrlr->regs = pctrlr->regs_bak;
-  SPDK_INFOLOG(SPDK_LOG_NVME, "recover orig bar %p\n", pctrlr->regs);
+
+	pctrlr->regs = pctrlr->regs_bak;
 }
 
 
-int nvme_pcie_bar_remap(struct spdk_nvme_ctrlr* ctrlr)
+int nvme_pcie_bar_remap(struct spdk_nvme_ctrlr *ctrlr)
 {
 	struct nvme_pcie_ctrlr *pctrlr = nvme_pcie_ctrlr(ctrlr);
 	void *map_address;
-  
-  map_address = mmap((void *)pctrlr->regs,
-                     pctrlr->regs_size,
-                     PROT_READ | PROT_WRITE,
-                     MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,
-                     -1, 0);
-  if (map_address == MAP_FAILED) {
-    SPDK_ERRLOG("mmap failed\n");
-    return -1;
-  }
-  
-  SPDK_INFOLOG(SPDK_LOG_NVME, "backup orig bar %p\n", pctrlr->regs);
-  
-  memset(map_address, 0xFF, sizeof(struct spdk_nvme_registers));
-  pctrlr->regs_bak = pctrlr->regs;
-  pctrlr->regs = (volatile struct spdk_nvme_registers *)map_address;
-  return 0;
+
+	map_address = mmap((void *)pctrlr->regs,
+			   pctrlr->regs_size,
+			   PROT_READ | PROT_WRITE,
+			   MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,
+			   -1, 0);
+	if (map_address == MAP_FAILED) {
+		SPDK_ERRLOG("mmap failed\n");
+		return -1;
+	}
+
+	memset(map_address, 0xFF, sizeof(struct spdk_nvme_registers));
+	pctrlr->regs_bak = pctrlr->regs;
+	pctrlr->regs = (volatile struct spdk_nvme_registers *)map_address;
+	return 0;
 }
 

@@ -2589,8 +2589,8 @@ nvme_ctrlr_destruct(struct spdk_nvme_ctrlr *ctrlr)
 	nvme_ctrlr_free_doorbell_buffer(ctrlr);
 
 	if (ctrlr->opts.no_shn_notification) {
-		SPDK_INFOLOG(SPDK_LOG_NVME, "Disable SSD: %s without shutdown notification\n",
-			     ctrlr->trid.traddr);
+		SPDK_DEBUGLOG(SPDK_LOG_NVME, "Disable SSD: %s without shutdown notification\n",
+			      ctrlr->trid.traddr);
 		nvme_ctrlr_disable(ctrlr);
 	} else {
 		nvme_ctrlr_shutdown(ctrlr);
