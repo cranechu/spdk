@@ -1561,6 +1561,14 @@ nvme_ctrlr_get_num_queues_done(void *arg, const struct spdk_nvme_cpl *cpl)
 			     ctrlr->opts.admin_timeout_ms);
 }
 
+void spdk_nvme_ctrlr_get_num_queues_done(void* arg, struct spdk_nvme_cpl* cpl)
+{
+	struct spdk_nvme_ctrlr *ctrlr = (struct spdk_nvme_ctrlr *)arg;
+  
+  nvme_ctrlr_get_num_queues_done(arg, cpl);
+  nvme_ctrlr_set_state(ctrlr, NVME_CTRLR_STATE_READY, NVME_TIMEOUT_INFINITE);
+}
+
 static int
 nvme_ctrlr_get_num_queues(struct spdk_nvme_ctrlr *ctrlr)
 {
@@ -1806,6 +1814,26 @@ nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 fail:
 	nvme_ctrlr_destruct_namespaces(ctrlr);
 	return rc;
+}
+
+int spdk_nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
+{
+	int rc = 0;
+	uint32_t nn = ctrlr->cdata.nn;
+  
+  rc = nvme_ctrlr_construct_namespaces(ctrlr);
+  if (rc == 0)
+  {
+    for (uint32_t i=0; i<nn; i++)
+    {
+      SPDK_DEBUGLOG(SPDK_LOG_NVME, "init namespace %d\n", i+1);
+  
+      ctrlr->ns[i].ctrlr = ctrlr;
+      ctrlr->ns[i].id = i+1;
+    }
+  }
+
+  return rc;
 }
 
 static void
@@ -2255,7 +2283,10 @@ nvme_ctrlr_process_init(struct spdk_nvme_ctrlr *ctrlr)
 	 */
 	switch (ctrlr->state) {
 	case NVME_CTRLR_STATE_INIT_DELAY:
-		nvme_ctrlr_set_state(ctrlr, NVME_CTRLR_STATE_INIT, ready_timeout_in_ms);
+    // pynvme: skip nvme init process in spdk
+    nvme_ctrlr_set_state(ctrlr, NVME_CTRLR_STATE_READY, NVME_TIMEOUT_INFINITE);
+    
+		//nvme_ctrlr_set_state(ctrlr, NVME_CTRLR_STATE_INIT, ready_timeout_in_ms);
 		/*
 		 * Controller may need some delay before it's enabled.
 		 *
@@ -2268,7 +2299,7 @@ nvme_ctrlr_process_init(struct spdk_nvme_ctrlr *ctrlr)
 		 */
 
 		// pynvme: removes the delay to catch the potential device issues
-		ctrlr->sleep_timeout_tsc = spdk_get_ticks(); // + (2 * spdk_get_ticks_hz() / 1000);
+		//ctrlr->sleep_timeout_tsc = spdk_get_ticks(); // + (2 * spdk_get_ticks_hz() / 1000);
 		break;
 
 	case NVME_CTRLR_STATE_INIT:

@@ -1222,11 +1222,12 @@ _is_page_aligned(uint64_t address, uint64_t page_size)
 }
 
 // spdk new API provided to pynvme
+extern int spdk_nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr);
+extern void spdk_nvme_ctrlr_get_num_queues_done(void* arg, struct spdk_nvme_cpl* cpl);
 extern uint32_t spdk_nvme_io_qpair_count(struct spdk_nvme_ctrlr *ctrlr);
 extern uint32_t nvme_pcie_qpair_outstanding_count(struct spdk_nvme_qpair *qpair);
 extern void nvme_pcie_bar_remap_recover(struct spdk_nvme_ctrlr *ctrlr);
 extern int nvme_pcie_bar_remap(struct spdk_nvme_ctrlr *ctrlr);
 extern const char *nvme_qpair_get_status_string(struct spdk_nvme_cpl *cpl);
-
 
 #endif /* __NVME_INTERNAL_H__ */
