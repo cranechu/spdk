@@ -1363,15 +1363,6 @@ nvme_pcie_qpair_complete_tracker(struct spdk_nvme_qpair *qpair, struct nvme_trac
 						cdata = &qpair->ctrlr->cdata;
 						memcpy(cdata, req->payload.contig_or_cb_arg, sizeof(*cdata));
 					}
-
-					if ((req->cmd.cdw10 & 0xff) == 0 && req->cmd.nsid > 0) {
-						struct spdk_nvme_ns_data *nsdata;
-
-						// identify namespace
-						SPDK_DEBUGLOG(SPDK_LOG_NVME, "copy identify namespace data\n");
-						nsdata = &qpair->ctrlr->nsdata[req->cmd.nsid - 1];
-						memcpy(nsdata, req->payload.contig_or_cb_arg, sizeof(*nsdata));
-					}
 				} else if (req->cmd.opc == SPDK_NVME_OPC_GET_FEATURES) {
 					// check fid
 					if ((req->cmd.cdw10 & 0xff) == 7) {
