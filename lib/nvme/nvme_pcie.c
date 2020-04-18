@@ -1351,35 +1351,34 @@ nvme_pcie_qpair_complete_tracker(struct spdk_nvme_qpair *qpair, struct nvme_trac
 		} else {
 			nvme_complete_request(tr->cb_fn, tr->cb_arg, qpair, req, cpl);
 
-      // pynvme: handle commands in nvme init process
-      if (nvme_qpair_is_admin_queue(qpair)) {
-        if (req->cmd.opc == SPDK_NVME_OPC_IDENTIFY) {
-          // check cns and nsid
-          if ((req->cmd.cdw10&0xff) == 1 && req->cmd.nsid == 0) {
-            struct spdk_nvme_ctrlr_data* cdata;
-            
-            // identify controller
-            SPDK_DEBUGLOG(SPDK_LOG_NVME, "copy identify controller data\n");
-            cdata = &qpair->ctrlr->cdata;
-            memcpy(cdata, req->payload.contig_or_cb_arg, sizeof(*cdata));
-          }
-          
-          if ((req->cmd.cdw10&0xff) == 0 && req->cmd.nsid > 0) {
-            struct spdk_nvme_ns_data* nsdata;
+			// pynvme: handle commands in nvme init process
+			if (nvme_qpair_is_admin_queue(qpair)) {
+				if (req->cmd.opc == SPDK_NVME_OPC_IDENTIFY) {
+					// check cns and nsid
+					if ((req->cmd.cdw10 & 0xff) == 1 && req->cmd.nsid == 0) {
+						struct spdk_nvme_ctrlr_data *cdata;
 
-            // identify namespace
-            SPDK_DEBUGLOG(SPDK_LOG_NVME, "copy identify namespace data\n");
-            nsdata = &qpair->ctrlr->nsdata[req->cmd.nsid - 1];
-            memcpy(nsdata, req->payload.contig_or_cb_arg, sizeof(*nsdata));
-          }          
-        }
-        else if (req->cmd.opc == SPDK_NVME_OPC_GET_FEATURES) {
-          // check fid
-          if ((req->cmd.cdw10&0xff) == 7) {
-            spdk_nvme_ctrlr_get_num_queues_done(qpair->ctrlr, cpl);
-          }
-        }
-      }
+						// identify controller
+						SPDK_DEBUGLOG(SPDK_LOG_NVME, "copy identify controller data\n");
+						cdata = &qpair->ctrlr->cdata;
+						memcpy(cdata, req->payload.contig_or_cb_arg, sizeof(*cdata));
+					}
+
+					if ((req->cmd.cdw10 & 0xff) == 0 && req->cmd.nsid > 0) {
+						struct spdk_nvme_ns_data *nsdata;
+
+						// identify namespace
+						SPDK_DEBUGLOG(SPDK_LOG_NVME, "copy identify namespace data\n");
+						nsdata = &qpair->ctrlr->nsdata[req->cmd.nsid - 1];
+						memcpy(nsdata, req->payload.contig_or_cb_arg, sizeof(*nsdata));
+					}
+				} else if (req->cmd.opc == SPDK_NVME_OPC_GET_FEATURES) {
+					// check fid
+					if ((req->cmd.cdw10 & 0xff) == 7) {
+						spdk_nvme_ctrlr_get_num_queues_done(qpair->ctrlr, cpl);
+					}
+				}
+			}
 		}
 
 		if (req_from_current_proc == true) {
