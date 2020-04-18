@@ -1825,7 +1825,7 @@ int spdk_nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 	if (rc == 0) {
 		for (uint32_t i = 0; i < nn; i++) {
 			SPDK_DEBUGLOG(SPDK_LOG_NVME, "init namespace %d\n", i + 1);
-      nvme_ns_construct(&ctrlr->ns[i], i+1, ctrlr);
+			nvme_ns_construct(&ctrlr->ns[i], i + 1, ctrlr);
 		}
 	}
 
