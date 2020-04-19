@@ -1234,6 +1234,14 @@ nvme_ctrlr_identify_done(void *arg, const struct spdk_nvme_cpl *cpl)
 			     ctrlr->opts.admin_timeout_ms);
 }
 
+void spdk_nvme_ctrlr_identify_done(void *arg, const struct spdk_nvme_cpl *cpl)
+{
+	struct spdk_nvme_ctrlr *ctrlr = (struct spdk_nvme_ctrlr *)arg;
+
+	nvme_ctrlr_identify_done(arg, cpl);
+	nvme_ctrlr_set_state(ctrlr, NVME_CTRLR_STATE_READY, NVME_TIMEOUT_INFINITE);
+}
+
 static int
 nvme_ctrlr_identify(struct spdk_nvme_ctrlr *ctrlr)
 {

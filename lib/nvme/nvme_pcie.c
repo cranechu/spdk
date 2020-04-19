@@ -1362,6 +1362,7 @@ nvme_pcie_qpair_complete_tracker(struct spdk_nvme_qpair *qpair, struct nvme_trac
 						SPDK_DEBUGLOG(SPDK_LOG_NVME, "copy identify controller data\n");
 						cdata = &qpair->ctrlr->cdata;
 						memcpy(cdata, req->payload.contig_or_cb_arg, sizeof(*cdata));
+						spdk_nvme_ctrlr_identify_done(qpair->ctrlr, cpl);
 					}
 				} else if (req->cmd.opc == SPDK_NVME_OPC_GET_FEATURES) {
 					// check fid
