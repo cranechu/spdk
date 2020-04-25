@@ -827,7 +827,8 @@ nvme_ctrlr_disable(struct spdk_nvme_ctrlr *ctrlr)
 	union spdk_nvme_cc_register	cc;
 
 	if (nvme_ctrlr_get_cc(ctrlr, &cc)) {
-		SPDK_ERRLOG("get_cc() failed\n");
+    // pynvme: device is offline when detach
+		SPDK_DEBUGLOG(SPDK_LOG_NVME, "get_cc() failed\n");
 		return -EIO;
 	}
 
