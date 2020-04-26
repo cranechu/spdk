@@ -2704,7 +2704,7 @@ spdk_nvme_ctrlr_process_admin_completions(struct spdk_nvme_ctrlr *ctrlr)
 	}
 	num_completions = rc;
 
-	rc = spdk_nvme_qpair_process_completions(ctrlr->adminq, 0);
+	rc = spdk_nvme_qpair_process_completions(ctrlr->adminq, 1);
 	nvme_robust_mutex_unlock(&ctrlr->ctrlr_lock);
 
 	if (rc < 0) {

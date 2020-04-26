@@ -227,10 +227,8 @@ function configure_linux_pci {
 		fi
 	done
 
-  ## pynvme: load a non-nvme device 
-  linux_bind_driver 0000:00:1f.3 uio_pci_generic  #audio
-  #linux_bind_driver 0000:00:1f.4 uio_pci_generic  #smbus
-  #linux_bind_driver 0000:3c:00.0 uio_pci_generic  #cardreader
+  ## pynvme: load a non-nvme device to test the raw PCIe
+  #linux_bind_driver 0000:00:1f.3 uio_pci_generic
   
 	# IOAT
 	TMP=$(mktemp)
