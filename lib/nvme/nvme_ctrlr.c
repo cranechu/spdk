@@ -1821,6 +1821,7 @@ nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 	return 0;
 
 fail:
+  SPDK_ERRLOG("construct namespace error: %d\n", rc);
 	nvme_ctrlr_destruct_namespaces(ctrlr);
 	return rc;
 }
