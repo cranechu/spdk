@@ -37,7 +37,7 @@
 
 static struct rte_pci_id nvme_pci_driver_id[] = {
 	{
-    // pynvme: load a non-nvme device 
+		// pynvme: load a non-nvme device
 		.class_id = RTE_CLASS_ANY_ID, //SPDK_PCI_CLASS_NVME,
 		.vendor_id = PCI_ANY_ID,
 		.device_id = PCI_ANY_ID,

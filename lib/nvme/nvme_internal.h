@@ -666,10 +666,10 @@ struct msix_ctrl {
 struct spdk_nvme_ctrlr {
 	/* Hot data (accessed in I/O path) starts here. */
 
+	intr_ctrl_t *pynvme_intc_ctrl;  // for pynvme
+
 	/** Array of namespaces indexed by nsid - 1 */
 	struct spdk_nvme_ns		*ns;
-
-	struct spdk_nvme_transport_id	trid;
 
 	uint32_t			num_ns;
 
@@ -689,6 +689,8 @@ struct spdk_nvme_ctrlr {
 
 	/** Controller support flags */
 	uint64_t			flags;
+
+	struct spdk_nvme_transport_id	trid;
 
 	/* Cold data (not accessed in normal I/O path) is after this point. */
 
@@ -775,8 +777,6 @@ struct spdk_nvme_ctrlr {
 	struct spdk_ring		*external_io_msgs;
 
 	STAILQ_HEAD(, nvme_io_msg_producer) io_producers;
-
-	intr_ctrl_t *pynvme_intc_ctrl;  // for pynvme
 };
 
 struct spdk_nvme_probe_ctx {

@@ -827,7 +827,7 @@ nvme_ctrlr_disable(struct spdk_nvme_ctrlr *ctrlr)
 	union spdk_nvme_cc_register	cc;
 
 	if (nvme_ctrlr_get_cc(ctrlr, &cc)) {
-    // pynvme: device is offline when detach
+		// pynvme: device is offline when detach
 		SPDK_DEBUGLOG(SPDK_LOG_NVME, "get_cc() failed\n");
 		return -EIO;
 	}
@@ -1821,7 +1821,7 @@ nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 	return 0;
 
 fail:
-  SPDK_ERRLOG("construct namespace error: %d\n", rc);
+	SPDK_ERRLOG("construct namespace error: %d\n", rc);
 	nvme_ctrlr_destruct_namespaces(ctrlr);
 	return rc;
 }

@@ -229,7 +229,7 @@ function configure_linux_pci {
 
   ## pynvme: load a non-nvme device to test the raw PCIe
   #linux_bind_driver 0000:00:1f.3 uio_pci_generic
-  
+
 	# IOAT
 	TMP=$(mktemp)
 	#collect all the device_id info of ioat devices.
