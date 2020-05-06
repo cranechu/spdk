@@ -1792,6 +1792,15 @@ nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 	/* ctrlr->num_ns may be 0 (startup) or a different number of namespaces (reset),
 	 * so check if we need to reallocate.
 	 */
+	SPDK_DEBUGLOG(SPDK_LOG_NVME, "alloc ns, nn %d, num_ns %d, ns %p\n",
+		      nn, ctrlr->num_ns, ctrlr->ns);
+
+	// pynvme: test device has no namespace, something wrong
+	if (nn == 0) {
+		SPDK_ERRLOG("controller has 0 namespaces\n");
+		return -1;
+	}
+
 	if (nn != ctrlr->num_ns) {
 		nvme_ctrlr_destruct_namespaces(ctrlr);
 
