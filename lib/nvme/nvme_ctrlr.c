@@ -1795,12 +1795,6 @@ nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 	SPDK_DEBUGLOG(SPDK_LOG_NVME, "alloc ns, nn %d, num_ns %d, ns %p\n",
 		      nn, ctrlr->num_ns, ctrlr->ns);
 
-	// pynvme: test device has no namespace, something wrong
-	if (nn == 0) {
-		SPDK_ERRLOG("controller has 0 namespaces\n");
-		return -1;
-	}
-
 	if (nn != ctrlr->num_ns) {
 		nvme_ctrlr_destruct_namespaces(ctrlr);
 
@@ -1837,18 +1831,7 @@ fail:
 
 int spdk_nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 {
-	int rc = 0;
-	uint32_t nn = ctrlr->cdata.nn;
-
-	rc = nvme_ctrlr_construct_namespaces(ctrlr);
-	if (rc == 0) {
-		for (uint32_t i = 0; i < nn; i++) {
-			SPDK_DEBUGLOG(SPDK_LOG_NVME, "init namespace %d\n", i + 1);
-			nvme_ns_construct(&ctrlr->ns[i], i + 1, ctrlr);
-		}
-	}
-
-	return rc;
+  return nvme_ctrlr_construct_namespaces(ctrlr);
 }
 
 static void
