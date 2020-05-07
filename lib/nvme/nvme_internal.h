@@ -449,7 +449,7 @@ struct spdk_nvme_ns {
 	uint8_t				id_desc_list[4096];
 
 	// pynvme: crc table
-	uint32_t *crc_table;
+	void *crc_table;
 	uint64_t table_size;
 };
 

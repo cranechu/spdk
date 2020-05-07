@@ -1831,7 +1831,7 @@ fail:
 
 int spdk_nvme_ctrlr_construct_namespaces(struct spdk_nvme_ctrlr *ctrlr)
 {
-  return nvme_ctrlr_construct_namespaces(ctrlr);
+	return nvme_ctrlr_construct_namespaces(ctrlr);
 }
 
 static void
