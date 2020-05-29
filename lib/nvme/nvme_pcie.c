@@ -1374,7 +1374,7 @@ nvme_pcie_qpair_complete_tracker(struct spdk_nvme_qpair *qpair, struct nvme_trac
 		}
 
 		//pynvme: unlock all LBA hold by this IO
-    // pnvme has only single thread in all process
+		// pnvme has only single thread in all process
 		//nvme_robust_mutex_lock(&qpair->ctrlr->ctrlr_lock);
 		crc32_unlock_lba(req);
 		//nvme_robust_mutex_unlock(&qpair->ctrlr->ctrlr_lock);
@@ -2022,9 +2022,9 @@ nvme_pcie_qpair_submit_request(struct spdk_nvme_qpair *qpair, struct nvme_reques
 	}
 
 	// pynvme: try to lock LBAs to access, if fail, queue this request
-  // IPC lock is too expensive, so only lock among threads and
-  // only inter-ioworker rw-mix crc verify is supported
-  // pynvme has single thread in every process, so ctrlr_lock is not required
+	// IPC lock is too expensive, so only lock among threads and
+	// only inter-ioworker rw-mix crc verify is supported
+	// pynvme has single thread in every process, so ctrlr_lock is not required
 	//nvme_robust_mutex_lock(&qpair->ctrlr->ctrlr_lock);
 	//nvme_robust_mutex_unlock(&qpair->ctrlr->ctrlr_lock);
 	if (crc32_lock_lba(req) == false) {
@@ -2032,7 +2032,7 @@ nvme_pcie_qpair_submit_request(struct spdk_nvme_qpair *qpair, struct nvme_reques
 		rc = -EAGAIN;
 		goto exit;
 	}
-  
+
 	TAILQ_REMOVE(&pqpair->free_tr, tr, tq_list); /* remove tr from free_tr */
 	TAILQ_INSERT_TAIL(&pqpair->outstanding_tr, tr, tq_list);
 	tr->req = req;
