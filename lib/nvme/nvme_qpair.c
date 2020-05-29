@@ -707,7 +707,8 @@ nvme_qpair_submit_request(struct spdk_nvme_qpair *qpair, struct nvme_request *re
 {
 	int rc;
 
-	if (spdk_unlikely(!STAILQ_EMPTY(&qpair->queued_req) && req->num_children == 0)) {
+	// pynvme: submit even when queued_req exists
+	if (0 && spdk_unlikely(!STAILQ_EMPTY(&qpair->queued_req) && req->num_children == 0)) {
 		/*
 		 * requests that have no children should be sent to the transport after all
 		 * currently queued requests. Requests with chilren will be split and go back

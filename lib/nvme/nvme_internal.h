@@ -1230,5 +1230,7 @@ extern uint32_t nvme_pcie_qpair_outstanding_count(struct spdk_nvme_qpair *qpair)
 extern void nvme_pcie_bar_remap_recover(struct spdk_nvme_ctrlr *ctrlr);
 extern int nvme_pcie_bar_remap(struct spdk_nvme_ctrlr *ctrlr);
 extern const char *nvme_qpair_get_status_string(struct spdk_nvme_cpl *cpl);
+extern bool crc32_lock_lba(struct nvme_request *req);
+extern void crc32_unlock_lba(struct nvme_request *req);
 
 #endif /* __NVME_INTERNAL_H__ */
